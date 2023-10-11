@@ -1,6 +1,7 @@
 import * as React from "react";
 import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
+import Slider from "@mui/material/Slider";
 import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
@@ -8,22 +9,44 @@ import Typography from "@mui/material/Typography";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
 import InputAdornment from "@mui/material/InputAdornment";
 import { range } from "lodash";
-import { Card, CardContent } from "@mui/material";
+import {
+  Card,
+  CardContent,
+  Checkbox,
+  FormControlLabel,
+  FormGroup,
+} from "@mui/material";
 
+/**
+ * @REFACTOR
+ * use one big state object
+ * make it more like a stepper
+ * separate thousands by commas
+ * fix title at top of page
+ * remove advanced
+ * separate equity out, make it answer one simple question
+ * have a basic event handler function
+ * move calcs to helpers
+ * write tests
+ * add validation
+ * add graphs
+ * persit for user
+ */
 export default function Settings() {
-  const [originalTerm, setOriginalTerm] = React.useState(2);
-  const [remainingTerm, setRemainingTerm] = React.useState(2);
-  const [appraisalAmount, setAppraisalAmount] = React.useState(100000);
-  const [originalBalance, setOriginalBalance] = React.useState(100000);
-  const [remainingBalance, setRemainingBalance] = React.useState(100000);
-  const [prepaidPrincipal, setPrepaidPrinciple] = React.useState(0);
-  const [couponRate, setCouponRate] = React.useState(9);
+  const [originalTerm, setOriginalTerm] = React.useState(30);
+  const [remainingTerm, setRemainingTerm] = React.useState(30);
+  const [appraisalAmount, setAppraisalAmount] = React.useState(500000);
+  const [originalBalance, setOriginalBalance] = React.useState(500000);
+  const [remainingBalance, setRemainingBalance] = React.useState(500000);
+  const [prepaidPrincipal, setPrepaidPrinciple] = React.useState(20000);
+  const [couponRate, setCouponRate] = React.useState(5);
   const [couponRateType, setCouponRateType] = React.useState<string>("fixed");
   const [monthlyPayment, setMontlyPayment] = React.useState(0);
   const [equity, setEquity] = React.useState(0);
   const [loanToValueRatio, setLoanToValueRatio] = React.useState(0);
   const [totalRepayment, setTotalRepayment] = React.useState(0);
   const [interestPaid, setInterestPaid] = React.useState(0);
+  const [showAdvanced, setShowAdvanced] = React.useState(false);
 
   const paymentsPerYear = 12;
 
@@ -45,6 +68,14 @@ export default function Settings() {
     setOriginalTerm(Number(event.target.value));
   };
 
+  const handleSliderOriginalTermChange = (
+    event: Event,
+    value: number | number[],
+    activeThumb: number
+  ) => {
+    setOriginalTerm(Number(value));
+  };
+
   const handleRemainingTermChange = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
@@ -55,6 +86,14 @@ export default function Settings() {
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
     setOriginalBalance(Number(event.target.value));
+  };
+
+  const handleSliderOriginalBalanceChange = (
+    event: Event,
+    value: number | number[],
+    activeThumb: number
+  ) => {
+    setOriginalBalance(Number(value));
   };
 
   const handleAppraisalAmountChange = (
@@ -83,6 +122,10 @@ export default function Settings() {
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
     setCouponRate(Number(event.target.value));
+  };
+
+  const handleShowAdvanced = () => {
+    setShowAdvanced(!showAdvanced);
   };
 
   React.useEffect(() => {
@@ -133,19 +176,36 @@ export default function Settings() {
     <Box
       component="form"
       sx={{
-        "& .MuiTextField-root": { m: 1, width: "25ch" },
+        "& .MuiTextField-root": { m: 1, width: "50ch" },
       }}
       noValidate
       autoComplete="off"
     >
-      <Card sx={{ mt: 4 }}>
-        <CardContent>
+      <Card sx={{ mt: 4, pt: 2 }}>
+        <CardContent
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+          }}
+        >
           <Typography gutterBottom variant="h6" component="div">
-            Settings
+            How Much?
           </Typography>
+          <Slider
+            sx={{ my: 8 }}
+            track={false}
+            step={10000}
+            marks
+            min={10000}
+            max={originalBalance > 1000000 ? originalBalance : 1000000}
+            valueLabelDisplay="on"
+            value={originalBalance}
+            onChange={handleSliderOriginalBalanceChange}
+          />
           <TextField
             id="outlined-number"
-            label="Original Balance"
+            label="Opening Loan Amount"
             type="number"
             InputLabelProps={{
               shrink: true,
@@ -154,7 +214,28 @@ export default function Settings() {
             value={originalBalance}
             onChange={handleOriginalBalanceChange}
           />
-          {/* this could be changed to two sliders */}
+        </CardContent>
+        <CardContent
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+          }}
+        >
+          <Typography gutterBottom variant="h6" component="div">
+            How Long?
+          </Typography>
+          <Slider
+            sx={{ my: 8 }}
+            track={false}
+            step={5}
+            marks
+            min={0}
+            max={50}
+            valueLabelDisplay="on"
+            value={originalTerm}
+            onChange={handleSliderOriginalTermChange}
+          />
           <TextField
             id="outlined-number"
             label="Original Term"
@@ -166,6 +247,18 @@ export default function Settings() {
             value={originalTerm}
             onChange={handleOriginalTermChange}
           />
+        </CardContent>
+        <CardContent
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            py: 8,
+          }}
+        >
+          <Typography sx={{ mb: 4 }} gutterBottom variant="h6" component="div">
+            Interest Rates
+          </Typography>
           <TextField
             id="outlined-number"
             label="Coupon Rate"
@@ -178,7 +271,7 @@ export default function Settings() {
             onChange={handleCouponRateChange}
           />
 
-          <FormControl sx={{ m: 1, width: "25ch" }}>
+          <FormControl sx={{ m: 1, width: "50ch" }}>
             <InputLabel id="coupon-rate-select-label">
               Coupon Rate Type
             </InputLabel>
@@ -188,66 +281,88 @@ export default function Settings() {
               value={couponRateType}
               label="Coupon Rate Type"
               onChange={handleCouponRateTypeChange}
+              disabled
             >
               <MenuItem value={"fixed"}>Fixed</MenuItem>
               {/* <MenuItem value={"variable"}>Variable</MenuItem> */}
             </Select>
           </FormControl>
         </CardContent>
-      </Card>
-      <Card sx={{ mt: 4 }}>
-        <CardContent>
-          <Typography gutterBottom variant="h6" component="div">
-            Advanced
-          </Typography>
-          <TextField
-            id="outlined-number"
-            label="Remaining Balance"
-            type="number"
-            InputLabelProps={{
-              shrink: true,
-            }}
-            InputProps={dollarAdornment}
-            value={remainingBalance}
-            onChange={handleRemainingBalanceChange}
-          />
-          <TextField
-            id="outlined-number"
-            label="Remaining Term"
-            type="number"
-            InputLabelProps={{
-              shrink: true,
-            }}
-            InputProps={yearsAdornment}
-            value={remainingTerm}
-            onChange={handleRemainingTermChange}
-          />
-          <TextField
-            id="outlined-number"
-            label="Prepaid Principal"
-            type="number"
-            InputLabelProps={{
-              shrink: true,
-            }}
-            value={prepaidPrincipal}
-            InputProps={dollarAdornment}
-            onChange={handlePrepaidPrincipalChange}
-          />
-          <TextField
-            id="outlined-number"
-            label="Appraisal Amount"
-            type="number"
-            InputLabelProps={{
-              shrink: true,
-            }}
-            InputProps={dollarAdornment}
-            value={appraisalAmount}
-            onChange={handleAppraisalAmountChange}
-          />
+        <CardContent
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+          }}
+        >
+          <FormGroup>
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={showAdvanced}
+                  onChange={handleShowAdvanced}
+                />
+              }
+              label="Show Advanced"
+            />
+          </FormGroup>
+          {showAdvanced ? (
+            <>
+              <TextField
+                id="outlined-number"
+                label="Remaining Balance"
+                type="number"
+                InputLabelProps={{
+                  shrink: true,
+                }}
+                InputProps={dollarAdornment}
+                value={remainingBalance}
+                onChange={handleRemainingBalanceChange}
+              />
+              <TextField
+                id="outlined-number"
+                label="Remaining Term"
+                type="number"
+                InputLabelProps={{
+                  shrink: true,
+                }}
+                InputProps={yearsAdornment}
+                value={remainingTerm}
+                onChange={handleRemainingTermChange}
+              />
+              <TextField
+                id="outlined-number"
+                label="Prepaid Principal"
+                type="number"
+                InputLabelProps={{
+                  shrink: true,
+                }}
+                value={prepaidPrincipal}
+                InputProps={dollarAdornment}
+                onChange={handlePrepaidPrincipalChange}
+              />
+              <TextField
+                id="outlined-number"
+                label="Appraisal Amount"
+                type="number"
+                InputLabelProps={{
+                  shrink: true,
+                }}
+                InputProps={dollarAdornment}
+                value={appraisalAmount}
+                onChange={handleAppraisalAmountChange}
+              />
+            </>
+          ) : null}
         </CardContent>
-      </Card>
-      <Card sx={{ mt: 4 }}>
-        <CardContent>
+        <CardContent
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            mb: 16,
+          }}
+        >
           <Typography gutterBottom variant="h6" component="div">
             Results
           </Typography>
@@ -260,24 +375,28 @@ export default function Settings() {
               ...dollarAdornment,
             }}
           />
-          <TextField
-            id="outlined-read-only-input"
-            label="Equity"
-            value={equity}
-            InputProps={{
-              readOnly: true,
-              ...dollarAdornment,
-            }}
-          />
-          <TextField
-            id="outlined-read-only-input"
-            label="Loan To Value Ratio"
-            value={loanToValueRatio}
-            InputProps={{
-              readOnly: true,
-              ...percentageAdornment,
-            }}
-          />
+          {showAdvanced ? (
+            <>
+              <TextField
+                id="outlined-read-only-input"
+                label="Equity"
+                value={equity}
+                InputProps={{
+                  readOnly: true,
+                  ...dollarAdornment,
+                }}
+              />
+              <TextField
+                id="outlined-read-only-input"
+                label="Loan To Value Ratio"
+                value={loanToValueRatio}
+                InputProps={{
+                  readOnly: true,
+                  ...percentageAdornment,
+                }}
+              />
+            </>
+          ) : null}
           <TextField
             id="outlined-read-only-input"
             label="Total Repayment"

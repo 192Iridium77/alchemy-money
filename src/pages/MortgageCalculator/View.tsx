@@ -5,7 +5,7 @@ export default function Calculator() {
   return (
     <>
       <Typography variant="h5" sx={{ p: 1 }}>
-        Mortgage Calculator
+        Mortgage
       </Typography>
       <Settings></Settings>
     </>

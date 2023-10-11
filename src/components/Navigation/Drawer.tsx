@@ -7,6 +7,7 @@ import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import AccountBalanceIcon from "@mui/icons-material/AccountBalance";
+import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
 import IconButton from "@mui/material/IconButton";
 import { Link } from "react-router-dom";
 import { styled, useTheme, Theme, CSSObject } from "@mui/material/styles";
@@ -99,10 +100,27 @@ export default function Drawer({
               >
                 <AccountBalanceIcon />
               </ListItemIcon>
-              <ListItemText
-                primary="Mortgage Calculator"
-                sx={{ opacity: open ? 1 : 0 }}
-              />
+              <ListItemText primary="Mortgage" sx={{ opacity: open ? 1 : 0 }} />
+            </ListItemButton>
+          </MenuLink>
+          <MenuLink to="/budget">
+            <ListItemButton
+              sx={{
+                minHeight: 48,
+                justifyContent: open ? "initial" : "center",
+                px: 2.5,
+              }}
+            >
+              <ListItemIcon
+                sx={{
+                  minWidth: 0,
+                  mr: open ? 3 : "auto",
+                  justifyContent: "center",
+                }}
+              >
+                <AccountBalanceWalletIcon />
+              </ListItemIcon>
+              <ListItemText primary="Budget" sx={{ opacity: open ? 1 : 0 }} />
             </ListItemButton>
           </MenuLink>
         </ListItem>
