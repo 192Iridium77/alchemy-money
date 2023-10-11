@@ -2,6 +2,7 @@ import { Toolbar as MuiToolbar, IconButton, Typography } from "@mui/material";
 import { Menu } from "@mui/icons-material";
 // import Image from "mui-image";
 import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
+import Image from "mui-image";
 
 interface ToolbarProps {
   open: boolean;
@@ -24,21 +25,9 @@ export default function Toolbar({ open, handleDrawerOpen }: ToolbarProps) {
         <Menu />
       </IconButton>
       {/* <Image src="/Logo.png" width={50} /> */}
-      <div
-        style={{
-          backgroundColor: "crimson",
-          borderRadius: "100%",
-          padding: "4px",
-          marginRight: "4px",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
-        <AttachMoneyIcon style={{ color: "white" }} />
-      </div>
+      <Image src="/AlchemyMoneyLogo.png" width={50} />
       <Typography variant="h6" noWrap component="div" sx={{ color: "black" }}>
-        Alchemy Money
+        Finance Management
       </Typography>
     </MuiToolbar>
   );
