@@ -1,7 +1,6 @@
 import { Toolbar as MuiToolbar, IconButton, Typography } from "@mui/material";
 import { Menu } from "@mui/icons-material";
 // import Image from "mui-image";
-import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
 import Image from "mui-image";
 
 interface ToolbarProps {
